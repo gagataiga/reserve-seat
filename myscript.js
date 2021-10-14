@@ -85,16 +85,18 @@ for (const key in reservedSeats) {
   });
 
   let seatSelectProcess = (thisSeatId) => { 
-    let index = selectSeats.indexOf(thisSeatId);
-    if (index > -1) {
-      selectSeats.splice(index, 1);
-      document.getElementById(thisSeatId).className = "a";
-    } else { 
-      selectSeats.push(thisSeatId);
-      document.getElementById(thisSeatId).className = "s";
+    if (!document.getElementById(thisSeatId).classList.contains("r")) {
+      const index = selectSeats.indexOf(thisSeatId);
+
+      if (index > -1) {
+        selectSeats.splice(index, 1);
+        document.getElementById(thisSeatId).className = "a";
+      } else { 
+        selectSeats.push(thisSeatId);
+        document.getElementById(thisSeatId).className = "s";
+      }
+      manageConfirmForm();
     }
-    manageConfirmForm();
-    console.log(selectSeats);
   }
 
   document.getElementById("reserve").addEventListener("click", (e) => {
@@ -116,6 +118,8 @@ for (const key in reservedSeats) {
          document.getElementById("selectedseats").innerHTML = `you have selected seat ${selectSeats[0]}`
       } else { 
         let seatString = selectSeats.toString();
+
+        // regular expression
         seatString = seatString.replace(/,/g, ",");
         seatString = seatString.replace(/,(?=[^,]*$)/, " and ");
         document.getElementById("selectedseats").innerHTML = `you have selected some seats ${seatString}`;
@@ -130,4 +134,39 @@ for (const key in reservedSeats) {
     }
   }
   manageConfirmForm();
+
+  document.getElementById("confirmres").addEventListener("submit", (e) => {
+    e.preventDefault();
+    processReservation();
+   });
+
+  let processReservation = () => {
+    const hardCodeRecords = Object.keys(reservedSeats).length;
+
+    const fname = document.getElementById("fname").value;
+    const lname = document.getElementById("lname").value;
+    let counter = 1;
+    let nextRecord = "";
+
+    selectSeats.forEach((thisSeat) => {
+      document.getElementById(thisSeat).className = "r";
+      document.getElementById(thisSeat).innerHTML = "R";
+      
+      nextRecord = `record${hardCodeRecords + counter}`;
+      reservedSeats[nextRecord] = {
+        seat: thisSeat,
+        owner: {
+          fname: fname,
+          lname: lname
+        }
+      }
+      counter++;
+    });
+    document.getElementById("resform").style.display = "none";
+    selectSeats = [];
+    manageConfirmForm();
+
+    console.log(reservedSeats);
+  };
+
 })();
