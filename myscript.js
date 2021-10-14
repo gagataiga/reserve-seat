@@ -93,7 +93,41 @@ for (const key in reservedSeats) {
       selectSeats.push(thisSeatId);
       document.getElementById(thisSeatId).className = "s";
     }
+    manageConfirmForm();
     console.log(selectSeats);
   }
 
+  document.getElementById("reserve").addEventListener("click", (e) => {
+    e.preventDefault();
+    document.getElementById("resform").style.display = "block";
+  })
+
+  document.getElementById("cancel").addEventListener("click", (e) => {
+    e.preventDefault();
+    document.getElementById("resform").style.display = "none";
+  })
+
+
+  let manageConfirmForm = () => { 
+    if (selectSeats.length > 0) {
+      document.getElementById("confirmres").style.display = "block";
+
+      if (selectSeats.length === 1) {
+         document.getElementById("selectedseats").innerHTML = `you have selected seat ${selectSeats[0]}`
+      } else { 
+        let seatString = selectSeats.toString();
+        seatString = seatString.replace(/,/g, ",");
+        seatString = seatString.replace(/,(?=[^,]*$)/, " and ");
+        document.getElementById("selectedseats").innerHTML = `you have selected some seats ${seatString}`;
+      }
+
+    } else { 
+      document.getElementById("confirmres").style.display = "none";
+      document.getElementById("selectedseats").innerHTML = 'You need to select some seats to reserve <br> <a href="#" id="error">close</a> this dialog box and pick at least one seat.';
+      document.getElementById("error").addEventListener("click", () => {
+        document.getElementById("resform").style.display = "none";
+      });
+    }
+  }
+  manageConfirmForm();
 })();
